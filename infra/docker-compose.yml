@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  mdb:
+    image: mongo:3.4.3
+    ports:
+        - "27017:27017"
+    command: mongod --replSet=bigchain-rs
+
+  bdb:
+    image: bigchaindb/bigchaindb
+    container_name: docker-bigchaindb
+    environment:
+      BIGCHAINDB_DATABASE_BACKEND: mongodb
+      BIGCHAINDB_DATABASE_HOST: mdb
+      BIGCHAINDB_DATABASE_PORT: 27017
+      BIGCHAINDB_SERVER_BIND: 0.0.0.0:9984
+    ports:
+        - "9984:9984"
+    volumes:
+        - ./bigchaindb_docker:/data
