@@ -6,9 +6,11 @@ import {
     makeTransferTransaction,
     signTransaction,
 } from './bigchaindb'; // Or however you'd like to import it
-import faker from './faker';
 
+import faker from './faker';
+const express = require('express');
 import rp from 'request-promise';
+const bodyParser = require('body-parser')
 
 class Bigchaindb {
     constructor() {
@@ -32,15 +34,14 @@ class Bigchaindb {
         return signedCreateTx;
     }
 
-    transfer() {
-        const brock = new Ed25519Keypair(); // public: "H8ZVy61CCKh5VQV9nzzzggNW8e5CyTbSiegpdLqLSmqi", private: "5xoYuPP92pznaGZF9KLsyAdR5C7yDU79of1KA9UK4qKS"
-        const brockCondition = new makeEd25519Condition(brock.publicKey);
-        const brockOutput = new makeOutput(brockCondition);
+    transfer(publicKey, tx) {
+        const condition = new makeEd25519Condition(publicKey);
+        const output = new makeOutput(condition);
         const fulfilledOutputIndex = 0;
-        const transferPokeTx = makeTransferTransaction(createPokeTx, noMetadata, [brockOutput], fulfilledOutputIndex);
+        const noMetadata = null;
+        const transferTx = makeTransferTransaction(tx, noMetadata, [output], fulfilledOutputIndex);
 
-        // OK, let's sign this TRANSFER (Ash has to, as he's the one currently in "control" of Pikachu)
-        const signedTransferTx = signTransaction(transferPokeTx, ash.privateKey);
+        const signedTransferTx = signTransaction(transferTx, this.keypair.privateKey);
     }
 
     transaction(element) {
@@ -62,3 +63,20 @@ setInterval(() => {
     bigchain.transaction(asset)
             .then(ret => {}, err => {})
 }, 1000);
+
+const app = express();
+app.use(bodyParser.json());
+
+app.post('/transfer', function (req, res) {
+    let tx = req.body.tx;
+    let publicKey = req.body.publicKey;
+
+    let transfer = bigchain.transfer(publicKey, tx);
+    bigchain
+        .transaction(transfer)
+        .then(result => res.send(result), err => res.send(err));
+});
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
