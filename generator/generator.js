@@ -12,8 +12,11 @@ import rp from 'request-promise';
 
 class Bigchaindb {
     constructor() {
-        this.keypair = new Ed25519Keypair();
-
+        //this.keypair = new Ed25519Keypair();
+        this.keypair = {
+                        publicKey: 'DePKLLGt7qQ3J8kbTNow2psobziipEq8bqA4SnCm3V8K',
+                        privateKey: 'AgBBQZsZvwDfV6Em9imheF4C6JdUYi7waViEznrhUXen'
+        };
         // Let's get an output and condition that lets Ash be the recipient of the new asset we're creating
         this.condition = new makeEd25519Condition(this.keypair.publicKey);
         this.output = new makeOutput(this.condition);
@@ -53,6 +56,8 @@ class Bigchaindb {
 let bigchain = new Bigchaindb();
 
 setInterval(() => {
+    console.log('creating asset...');
+
     let asset = bigchain.createAsset(faker.getAsset());
     bigchain.transaction(asset)
             .then(ret => {}, err => {})
