@@ -51,11 +51,9 @@ class Bigchaindb {
 }
 
 let bigchain = new Bigchaindb();
-let asset = bigchain.createAsset(faker.getAsset());
 
-bigchain.transaction(asset)
-    .then(response => {
-        console.log(response);
-    }, (err) => {
-        console.log(err); 
-    })
+setInterval(() => {
+    let asset = bigchain.createAsset(faker.getAsset());
+    bigchain.transaction(asset)
+            .then(ret => {}, err => {})
+}, 1000);
