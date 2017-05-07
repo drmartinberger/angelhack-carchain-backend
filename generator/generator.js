@@ -41,7 +41,7 @@ class Bigchaindb {
         const noMetadata = null;
         const transferTx = makeTransferTransaction(tx, noMetadata, [output], fulfilledOutputIndex);
 
-        const signedTransferTx = signTransaction(transferTx, this.keypair.privateKey);
+        return signTransaction(transferTx, this.keypair.privateKey);
     }
 
     transaction(element) {
