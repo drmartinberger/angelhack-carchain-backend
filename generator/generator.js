@@ -24,13 +24,13 @@ class Bigchaindb {
         this.output = new makeOutput(this.condition);
     }
 
-    createAsset(asset) {
+    createCreateTransaction(rowData) {
         const noMetadata = null; // Let's ignore that meta-stuff for now
 
-        const createPokeTx = makeCreateTransaction(asset, noMetadata, [this.output], this.keypair.publicKey);
+        const createTx = makeCreateTransaction(rowData, noMetadata, [this.output], this.keypair.publicKey);
 
-        const signedCreateTx = signTransaction(createPokeTx, this.keypair.privateKey);
-    
+        const signedCreateTx = signTransaction(createTx, this.keypair.privateKey);
+
         return signedCreateTx;
     }
 
@@ -47,7 +47,7 @@ class Bigchaindb {
     transaction(element) {
         return rp({
             url: 'http://localhost:9984/api/v1/transactions/',
-            method: "POST",       
+            method: "POST",
             json: element
         })
     }
@@ -57,10 +57,10 @@ class Bigchaindb {
 let bigchain = new Bigchaindb();
 
 setInterval(() => {
-    console.log('creating asset...');
-
-    let asset = bigchain.createAsset(faker.getAsset());
-    bigchain.transaction(asset)
+    let rowData = faker.getAsset();
+    let tx = bigchain.createCreateTransaction(rowData);
+    console.log('[' + new Date() + '] ' + 'sending data point: ' + JSON.stringify(rowData));
+    bigchain.transaction(tx)
             .then(ret => {}, err => {})
 }, 1000);
 
