@@ -56,13 +56,6 @@ class Bigchaindb {
 
 let bigchain = new Bigchaindb();
 
-setInterval(() => {
-    let rowData = faker.getAsset();
-    let tx = bigchain.createCreateTransaction(rowData);
-    console.log('[' + new Date() + '] ' + 'sending data point: ' + JSON.stringify(rowData));
-    bigchain.transaction(tx)
-            .then(ret => {}, err => {})
-}, 1000);
 
 const app = express();
 app.use(bodyParser.json());
@@ -75,6 +68,18 @@ app.post('/transfer', function (req, res) {
     bigchain
         .transaction(transfer)
         .then(result => res.send(result), err => res.send(err));
+});
+
+app.post('/start', function (req, res) {
+    setInterval(() => {
+        let rowData = faker.getAsset();
+        let tx = bigchain.createCreateTransaction(rowData);
+        console.log('[' + new Date() + '] ' + 'sending data point: ' + JSON.stringify(rowData));
+        bigchain.transaction(tx)
+                .then(ret => {}, err => {})
+    }, 1000);
+
+    res.send('success');
 });
 
 app.listen(3000, function () {
