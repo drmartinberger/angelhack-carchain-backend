@@ -9,8 +9,8 @@ class Faker {
     }
 
     getAsset() {
-        this.lat += this.randomInt(10,100)/100;
-        this.lon += this.randomInt(10,100)/100;
+        this.lat += this.randomInt(10,40)/100;
+        this.lon += this.randomInt(10,40)/100;
 
         return {
             speed: this.randomInt(30, 50),
